@@ -1,0 +1,28 @@
+{
+  "name": "ctf-sentinel",
+  "version": "1.0.0",
+  "description": "Your go-to Discord Bot for real-time CTF updates and insights powered by CTFtime",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MitruStefan/ctf-sentinel.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "ctf",
+    "ctftime"
+  ],
+  "author": "Stefan (@MitruStefan)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MitruStefan/ctf-sentinel/issues"
+  },
+  "homepage": "https://github.com/MitruStefan/ctf-sentinel#readme",
+  "dependencies": {
+    "discord.js": "^14.16.3"
+  }
+}
