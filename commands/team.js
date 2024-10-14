@@ -15,7 +15,7 @@ module.exports.interaction = async interaction => {
 	const team = await getTeam(query);
 	if (!team) return interaction.editReply({ content: 'Team not found.' });
 	const results = await getEventsByTeam(team.id);
-	if (!results) return interaction.editReply({ content: 'No details found for this team.' });
+	if (!results?.length) return interaction.editReply({ content: 'No details found for this team.' });
 
 	const embed = new djs.EmbedBuilder()
 		.setColor(global.config.color)
