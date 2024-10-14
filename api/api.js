@@ -1,6 +1,21 @@
-//to-do: add caching
+const NodeCache = require('node-cache');
+const cache = new NodeCache({ stdTTL: 60 * 60 * 24 }); // Cache for 1 day (86400 seconds)
+
+// Function to fetch and cache data
+const fetchAndCache = async (key, url) => {
+	const cachedData = cache.get(key);
+	if (cachedData) {
+		return cachedData;
+	} else {
+		const response = await fetch(url);
+		if (response.status !== 200) return null;
+		const data = await response.json();
+		cache.set(key, data);
+		return data;
+	}
+};
+
 const getTeam = async query => {
-	//https://ctftime.org/api/v1/teams/{team_id}/
 	if (query.match(/^[0-9]+$/)) {
 		const team = await fetch(`https://ctftime.org/api/v1/teams/${query}/`);
 		if (team.status === 200) {
@@ -9,34 +24,59 @@ const getTeam = async query => {
 			return null;
 		}
 	} else {
-		//not implemented yet
+		const team = await fetch(`https://ctftime.org/team/list/?q=${encodeURIComponent(query)}`);
+		if (team.url) {
+			const teamId = team.url.split('team/')[1];
+			const res = await fetch(`https://ctftime.org/api/v1/teams/${teamId}/`);
+			if (res.status === 200) {
+				return res.json();
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
 	}
 };
 
 const getEventsByTeam = async team => {
-	//https://ctftime.org/api/v1/results/{year}/
-	const response = await fetch(`https://ctftime.org/api/v1/results/${new Date().getUTCFullYear()}/`);
+	const currentYear = new Date().getUTCFullYear();
+	const startOfYear = new Date(Date.UTC(currentYear, 0, 1)).getTime() / 1000; // First millisecond of the current year
+	const endOfYear = new Date(Date.UTC(currentYear + 1, 0, 1)).getTime() / 1000 - 1; // Last millisecond of the current year
 
-	if (response.status === 200) {
-		const events = await response.json();
-		const teamEvents = [];
-		for (const eventId in events) {
-			const event = events[eventId];
-			const teamScore = event.scores.find(score => score.team_id == team);
+	// Fetch and cache event results for the current year
+	const events = await fetchAndCache(`results_${currentYear}`, `https://ctftime.org/api/v1/results/${currentYear}/`);
+	if (!events) return null;
 
-			if (teamScore) {
-				teamEvents.push({
-					eventId,
-					title: event.title,
-					points: teamScore.points,
-					place: teamScore.place,
-				});
-			}
+	// Fetch and cache events for the current year
+	const times = await fetchAndCache(
+		`events_${currentYear}`,
+		`https://ctftime.org/api/v1/events/?limit=1000&start=${startOfYear}&finish=${endOfYear}`,
+	);
+	if (!times) return null;
+
+	const teamEvents = [];
+	for (const eventId in events) {
+		const event = events[eventId];
+		const teamScore = event.scores.find(score => score.team_id == team);
+
+		if (teamScore) {
+			teamEvents.push({
+				eventId,
+				title: event.title,
+				points: teamScore.rating,
+				place: teamScore.place,
+			});
 		}
-		return teamEvents;
-	} else {
-		return null;
 	}
+
+	teamEvents.sort((a, b) => {
+		const aTime = new Date(times.find(time => time.id == a.eventId).start);
+		const bTime = new Date(times.find(time => time.id == b.eventId).start);
+		return aTime - bTime;
+	});
+
+	return teamEvents;
 };
 
 module.exports = {

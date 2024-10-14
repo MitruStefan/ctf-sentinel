@@ -4,7 +4,7 @@ require('dotenv').config();
 const settings = { token: process.env.TOKEN, color: '#0394fc' };
 global.config = settings;
 const client = new djs.Client({
-	intents: ['Guilds', 'GuildMessages', 'GuildMembers'].map(r => djs.IntentsBitField.Flags[r]),
+	intents: ['Guilds', 'GuildMessages' /*, 'GuildMembers'*/].map(r => djs.IntentsBitField.Flags[r]),
 });
 
 const files = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -19,7 +19,6 @@ client.once('ready', async () => {
 });
 
 client.on('interactionCreate', async interaction => {
-	if (!interaction.member) return;
 	try {
 		if (interaction.isCommand()) {
 			const command = commands[interaction.commandName];
