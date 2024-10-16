@@ -11,7 +11,17 @@ module.exports.interaction = async interaction => {
 		.sort((a, b) => {
 			if (sort === 'weight') {
 				return b.weight - a.weight;
-			} else return;
+			} else if (sort === 'end') {
+				return new Date(a.finish) - new Date(b.finish);
+			} else if (sort === 'start') {
+				return new Date(a.start) - new Date(b.start);
+			} else if (sort === 'participants') {
+				return b.participants - a.participants;
+			} else if (sort === 'duration') {
+				return new Date(a.finish) - new Date(a.start) - (new Date(b.finish) - new Date(b.start));
+			} else {
+				return new Date(a.start) - new Date(b.start);
+			}
 		})
 		.slice(0, limit || 25);
 	const embed = new djs.EmbedBuilder()
@@ -23,8 +33,8 @@ module.exports.interaction = async interaction => {
 	for (const event of events) {
 		const startTime = new Date(event.start);
 		const endTime = new Date(event.finish);
-		let value = `[${event.title.length > 40 ? `${event.title.slice(0, 37)}...` : event.title}](${event.ctftime_url})
-Begins: <t:${Math.floor(startTime.getTime() / 1000)}:f>\nEnds: <t:${Math.floor(endTime.getTime() / 1000)}:f>
+		let value = `**[${event.title.length > 40 ? `${event.title.slice(0, 37)}...` : event.title}](${event.ctftime_url})**
+\nBegins: <t:${Math.floor(startTime.getTime() / 1000)}:f>\nEnds: <t:${Math.floor(endTime.getTime() / 1000)}:f>
 Format: ${event.format}
 Website: <${event.url}>
 Weight: ${event.weight}
@@ -42,7 +52,7 @@ Prizes: ${event.prizes ? `${event.prizes}` : 'None'}`;
 		}`;
 
 		embed.addFields({
-			name: '\u200B',
+			name: '────────────★────────────', //\u200B
 			value: value,
 		});
 	}
@@ -64,9 +74,15 @@ module.exports.application_command = () => {
 		.addStringOption(option =>
 			option
 				.setName('sort')
-				.setDescription('The sorting method for the events.')
+				.setDescription('The sorting method for the events. Defaults to start time.')
 				.setRequired(false)
-				.addChoices({ name: 'Weight', value: 'weight' }),
+				.addChoices(
+					{ name: 'Weight', value: 'weight' },
+					{ name: 'End Time', value: 'end' },
+					{ name: 'Start Time', value: 'start' },
+					{ name: 'Participants', value: 'participants' },
+					{ name: 'Duration', value: 'duration' },
+				),
 		)
 		.setIntegrationTypes(['GuildInstall', 'UserInstall'])
 		.setContexts(['BotDM', 'Guild', 'PrivateChannel']);
