@@ -17,22 +17,14 @@ const fetchAndCache = async (key, url) => {
 
 const getTeam = async query => {
 	if (query.match(/^[0-9]+$/)) {
-		const team = await fetch(`https://ctftime.org/api/v1/teams/${query}/`);
-		if (team.status === 200) {
-			return team.json();
-		} else {
-			return null;
-		}
+		const team = await fetchAndCache(`team_${query}`, `https://ctftime.org/api/v1/teams/${query}/`);
+		return team;
 	} else {
 		const team = await fetch(`https://ctftime.org/team/list/?q=${encodeURIComponent(query)}`);
 		if (team.url) {
 			const teamId = team.url.split('team/')[1];
-			const res = await fetch(`https://ctftime.org/api/v1/teams/${teamId}/`);
-			if (res.status === 200) {
-				return res.json();
-			} else {
-				return null;
-			}
+			const res = await fetchAndCache(`team_${teamId}`, `https://ctftime.org/api/v1/teams/${teamId}/`);
+			return res;
 		} else {
 			return null;
 		}
@@ -59,12 +51,11 @@ const getEventsByTeam = async team => {
 	for (const eventId in events) {
 		const event = events[eventId];
 		const teamScore = event.scores.find(score => score.team_id == team);
-
 		if (teamScore) {
 			teamEvents.push({
 				eventId,
 				title: event.title,
-				points: teamScore.rating,
+				points: teamScore.points,
 				place: teamScore.place,
 			});
 		}
