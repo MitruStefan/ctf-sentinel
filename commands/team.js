@@ -20,8 +20,9 @@ module.exports.interaction = async interaction => {
 	const embed = new djs.EmbedBuilder()
 		.setColor(global.config.color)
 		.setTitle(`${team.name}`)
-		.setURL(`https://ctftime.org/team/${team.id}/`)
-		.setThumbnail(team.logo);
+		.setURL(`https://ctftime.org/team/${team.id}/`);
+
+	if (team.logo) embed.setThumbnail(team.logo);
 
 	const rating = team.rating[new Date().getFullYear()];
 
