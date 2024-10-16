@@ -29,5 +29,9 @@ module.exports.button = async interaction => {
 	});
 };
 module.exports.application_command = () => {
-	return new djs.SlashCommandBuilder().setName('ping').setDescription("Replies with the bot's current ping and round-trip time.");
+	return new djs.SlashCommandBuilder()
+		.setName('ping')
+		.setDescription("Replies with the bot's current ping and round-trip time.")
+		.setIntegrationTypes(['GuildInstall', 'UserInstall'])
+		.setContexts(['BotDM', 'Guild', 'PrivateChannel']);
 };
