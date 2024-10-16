@@ -70,7 +70,20 @@ const getEventsByTeam = async team => {
 	return teamEvents;
 };
 
+const getUpcomingEvents = async () => {
+	const currentYear = new Date().getUTCFullYear();
+	const events = await fetchAndCache(`events_${currentYear}`, `https://ctftime.org/api/v1/events/?limit=1000`);
+	if (!events) return null;
+	const startDate = new Date();
+	const endDate = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+	const upcomingEvents = events.filter(event => {
+		const startTime = new Date(event.start);
+		return startTime >= startDate && startTime <= endDate;
+	});
+	return upcomingEvents || null;
+};
 module.exports = {
 	getTeam,
 	getEventsByTeam,
+	getUpcomingEvents,
 };

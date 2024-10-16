@@ -10,7 +10,7 @@ const suff = nr => {
 	return nr + 'th';
 };
 module.exports.interaction = async interaction => {
-	interaction.deferReply({ ephemeral: false });
+	await interaction.deferReply({ ephemeral: false });
 	const query = interaction.options.getString('query');
 	const team = await getTeam(query);
 	if (!team) return interaction.editReply({ content: 'Team not found.' });
