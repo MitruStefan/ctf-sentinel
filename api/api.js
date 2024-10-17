@@ -1,5 +1,6 @@
 const NodeCache = require('node-cache');
 const cache = new NodeCache({ stdTTL: 60 * 60 * 24 }); // Cache for 1 day (86400 seconds)
+const log = require('../utilities/log.js');
 
 // Function to fetch and cache data
 const fetchAndCache = async (key, url) => {
@@ -8,6 +9,7 @@ const fetchAndCache = async (key, url) => {
 		return cachedData;
 	} else {
 		const response = await fetch(url);
+		log(response, 'api');
 		if (response.status !== 200) return null;
 		const data = await response.json();
 		cache.set(key, data);

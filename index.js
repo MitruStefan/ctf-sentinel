@@ -1,7 +1,7 @@
 const djs = require('discord.js');
 const fs = require('fs');
 require('dotenv').config();
-const settings = { token: process.env.TOKEN, color: '#0394fc' };
+const settings = { token: process.env.TOKEN, color: '#0394fc', timezone: 'Europe/Bucharest' };
 global.config = settings;
 const client = new djs.Client({
 	intents: ['Guilds', 'GuildMessages' /*, 'GuildMembers'*/].map(r => djs.IntentsBitField.Flags[r]),
@@ -13,13 +13,20 @@ files.forEach(file => {
 	commands[file.slice(0, -3)] = require(`./commands/${file}`);
 });
 
+const log = require('./utilities/log.js');
+
 client.once('ready', async () => {
 	console.log(`Logged in as ${client.user.tag}!`);
+	if (!fs.existsSync('logs.csv')) {
+		fs.writeFileSync('logs.csv', 'Date,Time,Type,Message,Name,Command,Channel\n', 'utf8');
+	}
+	log(client.user.username, 'ready');
 	await require('./deploy-commands.js')(client);
 });
 
 client.on('interactionCreate', async interaction => {
 	try {
+		log(interaction, 'command');
 		if (interaction.isCommand()) {
 			const command = commands[interaction.commandName];
 			if (command?.interaction) {
@@ -34,8 +41,13 @@ client.on('interactionCreate', async interaction => {
 	} catch (err) {
 		const err_payload = { content: `There was an error while executing this command!\n${err}`, ephemeral: true };
 		console.log(err);
-		if (interaction.replied || interaction.deferred) interaction.followUp(err_payload);
+		const base = {};
+		base.interaction = interaction;
+		base.error = err;
+		log(base, 'error');
+		if (interaction.replied || interaction.deferred) await interaction.followUp(err_payload);
 		else await interaction.reply(err_payload);
+		throw err;
 	}
 });
 
