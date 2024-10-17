@@ -1,10 +1,11 @@
 const djs = require('discord.js');
 const fs = require('fs');
 require('dotenv').config();
-const settings = { token: process.env.TOKEN, color: '#0394fc', timezone: 'Europe/Bucharest' };
+const settings = { token: process.env.TOKEN, ownerId: process.env.OWNERID, color: '#0394fc', timezone: 'Europe/Bucharest' };
 global.config = settings;
 const client = new djs.Client({
-	intents: ['Guilds', 'GuildMessages' /*, 'GuildMembers'*/].map(r => djs.IntentsBitField.Flags[r]),
+	intents: ['Guilds', 'GuildMessages', 'DirectMessages' /*, 'GuildMembers'*/].map(r => djs.IntentsBitField.Flags[r]),
+	partials: ['Channel', 'Message'].map(r => djs.Partials[r]),
 });
 
 const files = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -22,6 +23,12 @@ client.once('ready', async () => {
 	}
 	log(client.user.username, 'ready');
 	await require('./deploy-commands.js')(client);
+});
+
+client.on('messageCreate', async msg => {
+	if (msg.guildId === null && msg.content === `<@${client.user.id}> csv` && msg.author.id === settings.ownerId) {
+		msg.channel.send({ files: ['logs.csv'] });
+	}
 });
 
 client.on('interactionCreate', async interaction => {
