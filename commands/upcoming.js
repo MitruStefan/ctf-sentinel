@@ -32,13 +32,14 @@ module.exports.interaction = async interaction => {
 		.setURL(`https://ctftime.org/event/list/upcoming`)
 		.setDescription('Here are the upcoming CTFs in the next 7 days:')
 		.setThumbnail('attachment://flag.png');
-	for (let i = 0; i < events.length; i++) {
+	let characters = 0;
+	for (let i = 0; i < events.length && characters + 1000 < 5500; i++) {
 		const event = events[i];
 		const startTime = new Date(event.start);
 		const endTime = new Date(event.finish);
-		let value = `:number_${i + 1}: **[${event.title.length > 40 ? `${event.title.slice(0, 37)}...` : event.title}](${
-			event.ctftime_url
-		})**
+		let value = `${i < 10 ? `:number_${i + 1}:` : `${i + 1}`} **[${
+			event.title.length > 40 ? `${event.title.slice(0, 37)}...` : event.title
+		}](${event.ctftime_url})**
 \nBegins: <t:${Math.floor(startTime.getTime() / 1000)}:f>\nEnds: <t:${Math.floor(endTime.getTime() / 1000)}:f>
 Format: ${event.format}
 Website: <${event.url}>
@@ -52,7 +53,7 @@ Prizes: ${event.prizes ? `${event.prizes}` : 'None'}`;
 			value += `\nDescription:\n\n${
 				event.description
 					? event.description.length + value.length > 950
-						? event.description.slice(0, 950 - value.length)
+						? event.description.slice(0, 950 - value.length) + '...'
 						: event.description
 					: 'None'
 			}`;
@@ -61,6 +62,7 @@ Prizes: ${event.prizes ? `${event.prizes}` : 'None'}`;
 			name: '──────────★──────────', //\u200B
 			value: value,
 		});
+		characters += value.length + 21;
 	}
 	await interaction.editReply({ embeds: [embed], files: [{ attachment: 'assets/flag.png', name: 'flag.png' }] });
 };
@@ -75,7 +77,7 @@ module.exports.application_command = () => {
 				.setDescription('The maximum number of events to display. Defaults to 5.')
 				.setRequired(false)
 				.setMinValue(1)
-				.setMaxValue(25),
+				.setMaxValue(15),
 		)
 		.addStringOption(option =>
 			option
