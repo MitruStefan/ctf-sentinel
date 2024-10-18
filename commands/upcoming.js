@@ -52,7 +52,7 @@ Prizes: ${event.prizes ? `${event.prizes}` : 'None'}`;
 		}`;
 
 		embed.addFields({
-			name: '────────────★────────────', //\u200B
+			name: '──────────★──────────', //\u200B
 			value: value,
 		});
 	}
