@@ -5,6 +5,8 @@ module.exports.interaction = async interaction => {
 	await interaction.deferReply({ ephemeral: false });
 	const limit = interaction.options.getInteger('limit');
 	const sort = interaction.options.getString('sort');
+	const show_description =
+		interaction.options.getBoolean('show_description') === null ? true : interaction.options.getBoolean('show_description');
 
 	const upcoming_events = await getUpcomingEvents();
 	const events = upcoming_events
@@ -20,20 +22,23 @@ module.exports.interaction = async interaction => {
 			} else if (sort === 'duration') {
 				return new Date(a.finish) - new Date(a.start) - (new Date(b.finish) - new Date(b.start));
 			} else {
-				return new Date(a.start) - new Date(b.start);
+				return b.weight - a.weight;
 			}
 		})
-		.slice(0, limit || 25);
+		.slice(0, limit || 5);
 	const embed = new djs.EmbedBuilder()
 		.setColor(global.config.color)
 		.setTitle(`Upcoming CTFs`)
 		.setURL(`https://ctftime.org/event/list/upcoming`)
 		.setDescription('Here are the upcoming CTFs in the next 7 days:')
 		.setThumbnail('attachment://flag.png');
-	for (const event of events) {
+	for (let i = 0; i < events.length; i++) {
+		const event = events[i];
 		const startTime = new Date(event.start);
 		const endTime = new Date(event.finish);
-		let value = `**[${event.title.length > 40 ? `${event.title.slice(0, 37)}...` : event.title}](${event.ctftime_url})**
+		let value = `:number_${i + 1}: **[${event.title.length > 40 ? `${event.title.slice(0, 37)}...` : event.title}](${
+			event.ctftime_url
+		})**
 \nBegins: <t:${Math.floor(startTime.getTime() / 1000)}:f>\nEnds: <t:${Math.floor(endTime.getTime() / 1000)}:f>
 Format: ${event.format}
 Website: <${event.url}>
@@ -43,13 +48,14 @@ Location: ${
 			event.location.length ? `${event.onsite ? event.location : event.location + ' and Online'}` : event.onsite ? 'Onsite' : 'Online'
 		}
 Prizes: ${event.prizes ? `${event.prizes}` : 'None'}`;
-		value += `\nDescription:\n\n${
-			event.description
-				? event.description.length + value.length > 950
-					? event.description.slice(0, 950 - value.length)
-					: event.description
-				: 'None'
-		}`;
+		if (show_description)
+			value += `\nDescription:\n\n${
+				event.description
+					? event.description.length + value.length > 950
+						? event.description.slice(0, 950 - value.length)
+						: event.description
+					: 'None'
+			}`;
 
 		embed.addFields({
 			name: '──────────★──────────', //\u200B
@@ -66,7 +72,7 @@ module.exports.application_command = () => {
 		.addIntegerOption(option =>
 			option
 				.setName('limit')
-				.setDescription('The maximum number of events to display.')
+				.setDescription('The maximum number of events to display. Defaults to 5.')
 				.setRequired(false)
 				.setMinValue(1)
 				.setMaxValue(25),
@@ -74,7 +80,7 @@ module.exports.application_command = () => {
 		.addStringOption(option =>
 			option
 				.setName('sort')
-				.setDescription('The sorting method for the events. Defaults to start time.')
+				.setDescription('The sorting method for the events. Defaults to weight.')
 				.setRequired(false)
 				.addChoices(
 					{ name: 'Weight', value: 'weight' },
@@ -83,6 +89,9 @@ module.exports.application_command = () => {
 					{ name: 'Participants', value: 'participants' },
 					{ name: 'Duration', value: 'duration' },
 				),
+		)
+		.addBooleanOption(option =>
+			option.setName('show_description').setDescription('Include the description of the event. Defaults to true.').setRequired(false),
 		)
 		.setIntegrationTypes(['GuildInstall', 'UserInstall'])
 		.setContexts(['BotDM', 'Guild', 'PrivateChannel']);
