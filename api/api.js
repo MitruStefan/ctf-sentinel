@@ -63,6 +63,10 @@ const getEventsByTeam = async team => {
 		}
 	}
 
+	if (teamEvents.some(event => times.find(time => time.id == event.eventId)?.start == undefined)) {
+		return null;
+	}
+
 	teamEvents.sort((a, b) => {
 		const aTime = new Date(times.find(time => time.id == a.eventId).start);
 		const bTime = new Date(times.find(time => time.id == b.eventId).start);
