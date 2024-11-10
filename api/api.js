@@ -89,7 +89,7 @@ const getUpcomingEvents = async () => {
 
 	const upcomingEvents = events.filter(event => {
 		const startTime = new Date(event.start);
-		return startTime >= startDate && startTime <= endDate && startTime > new Date();
+		return startTime >= startDate && startTime <= endDate && startDate > new Date();
 	});
 	return upcomingEvents || null;
 };
