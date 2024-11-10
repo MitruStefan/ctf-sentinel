@@ -44,7 +44,7 @@ module.exports.interaction = async interaction => {
 Website: <${event.url}>
 Weight: ${event.weight}
 Participants: ${event.participants}
-Prizes: ${event.prizes ? (event.prizes.length > 1000 ? event.prizes.slice(0, 1000) + '...' : event.prizes) : 'None'}`;
+Prizes: ${event.prizes ? (event.prizes.length > 200 ? event.prizes.slice(0, 200) + '...' : event.prizes) : 'None'}`;
 		if (show_description)
 			value += `\nDescription:\n\n${
 				event.description
