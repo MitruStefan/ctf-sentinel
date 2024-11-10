@@ -8,7 +8,7 @@ module.exports.interaction = async interaction => {
 	const show_description =
 		interaction.options.getBoolean('show_description') === null ? true : interaction.options.getBoolean('show_description');
 
-	const upcoming_events = await getUpcomingEvents();
+	const upcoming_events = (await getUpcomingEvents()).filter(e => e.onsite || e.location.includes('Online'));
 	const events = upcoming_events
 		.sort((a, b) => {
 			if (sort === 'weight') {
@@ -41,14 +41,10 @@ module.exports.interaction = async interaction => {
 			event.title.length > 40 ? `${event.title.slice(0, 37)}...` : event.title
 		}](${event.ctftime_url})**
 \nBegins: <t:${Math.floor(startTime.getTime() / 1000)}:f>\nEnds: <t:${Math.floor(endTime.getTime() / 1000)}:f>
-Format: ${event.format}
 Website: <${event.url}>
 Weight: ${event.weight}
 Participants: ${event.participants}
-Location: ${
-			event.location.length ? `${event.onsite ? event.location : event.location + ' and Online'}` : event.onsite ? 'Onsite' : 'Online'
-		}
-Prizes: ${event.prizes ? `${event.prizes}` : 'None'}`;
+Prizes: ${event.prizes ? (event.prizes.length > 1000 ? event.prizes.slice(0, 1000) + '...' : event.prizes) : 'None'}`;
 		if (show_description)
 			value += `\nDescription:\n\n${
 				event.description
