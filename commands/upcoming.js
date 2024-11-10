@@ -8,7 +8,7 @@ module.exports.interaction = async interaction => {
 	const show_description =
 		interaction.options.getBoolean('show_description') === null ? true : interaction.options.getBoolean('show_description');
 
-	const upcoming_events = (await getUpcomingEvents()).filter(e => e.onsite || e.location.includes('Online'));
+	const upcoming_events = await getUpcomingEvents();
 	const events = upcoming_events
 		.sort((a, b) => {
 			if (sort === 'weight') {
