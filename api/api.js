@@ -91,7 +91,7 @@ const getUpcomingEvents = async () => {
 		const startTime = new Date(event.start);
 		console.log(event);
 		return (
-			startTime >= startDate && startTime <= endDate && (event.onsite || event.location.includes('Online') || event.location == '')
+			startTime >= startDate && startTime <= endDate && (!event.onsite || event.location.includes('Online') || event.location == '')
 		);
 	});
 	return upcomingEvents || null;
