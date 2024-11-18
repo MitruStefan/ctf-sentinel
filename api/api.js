@@ -59,6 +59,7 @@ const getEventsByTeam = async team => {
 				title: event.title,
 				points: teamScore.points,
 				place: teamScore.place,
+				percentage: (teamScore.place/event.scores.length)*100,
 			});
 		}
 	}
