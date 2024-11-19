@@ -2,17 +2,19 @@ const NodeCache = require('node-cache');
 const cache = new NodeCache({ stdTTL: 60 * 60 * 24 }); // Cache for 1 day (86400 seconds)
 const log = require('../utilities/log.js');
 
-// Define suffix
-const suff = (d) => {
-  const dString = String(d);
-  const last = +dString.slice(-2);
-  if (last > 3 && last < 21) return d + 'th';
-  switch (last % 10) {
-    case 1:  return d + "st";
-    case 2:  return d + "nd";
-    case 3:  return d + "rd";
-    default: return d + "th";
-  }
+const suffix = d => {
+	const last = d % 100;
+	if (last > 3 && last < 21) return d + 'th';
+	switch (last % 10) {
+		case 1:
+			return d + 'st';
+		case 2:
+			return d + 'nd';
+		case 3:
+			return d + 'rd';
+		default:
+			return d + 'th';
+	}
 };
 
 // Function to fetch and cache data
@@ -72,7 +74,7 @@ const getEventsByTeam = async team => {
 				title: event.title,
 				points: teamScore.points,
 				place: teamScore.place,
-				percentage: (teamScore.place/event.scores.length)*100,
+				percentage: (teamScore.place / event.scores.length) * 100,
 			});
 		}
 	}
@@ -114,5 +116,5 @@ module.exports = {
 	getTeam,
 	getEventsByTeam,
 	getUpcomingEvents,
-	suff,
+	suff: suffix,
 };
