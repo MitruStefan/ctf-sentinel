@@ -16,7 +16,7 @@ module.exports.interaction = async interaction => {
 	const limit = interaction.options.getInteger('limit') || 5;
 	const team = await getTeam(query);
 	if (!team) return interaction.editReply({ content: 'Team not found.' });
-	let results = await getEventsByTeam(team.id);
+	const results = await getEventsByTeam(team.id);
 	if (!results?.length) return interaction.editReply({ content: 'No details found for this team.' });
 
 	const embed = new djs.EmbedBuilder()
@@ -31,11 +31,11 @@ module.exports.interaction = async interaction => {
 	if (sort === 'percentage') results.sort((a, b) => parseFloat(a.percentage) - parseFloat(b.percentage));
 	else results.sort((a, b) => parseInt(a.place) - parseInt(b.place));
 
-	results = results.slice(0, limit);
+	const eventResults = results.slice(0, limit);
 
 	let events = '';
-	for (let i = 0; i < results.length; i++) {
-		const event = results[i];
+	for (let i = 0; i < eventResults.length; i++) {
+		const event = eventResults[i];
 		const place = event.place;
 		events += `${i + 1}. [${event.title.length > 40 ? `${event.title.slice(0, 37)}...` : event.title}](<https://ctftime.org/event/${
 			event.eventId
