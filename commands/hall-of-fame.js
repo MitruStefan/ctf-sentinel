@@ -1,14 +1,6 @@
 const djs = require('discord.js');
-const { getTeam, getEventsByTeam } = require('../api/api.js');
+const { getTeam, getEventsByTeam, suff } = require('../api/api.js');
 
-const suff = nr => {
-	if (nr % 100 < 11 || nr % 100 > 13) {
-		if (nr % 10 == 1) return nr + 'st';
-		if (nr % 10 == 2) return nr + 'nd';
-		if (nr % 10 == 3) return nr + 'rd';
-	}
-	return nr + 'th';
-};
 module.exports.interaction = async interaction => {
 	await interaction.deferReply({ ephemeral: false });
 	const query = interaction.options.getString('query');
