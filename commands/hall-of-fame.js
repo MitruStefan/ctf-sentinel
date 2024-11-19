@@ -31,7 +31,7 @@ module.exports.interaction = async interaction => {
 	if (sort === 'percentage') results.sort((a, b) => parseFloat(a.percentage) - parseFloat(b.percentage));
 	else results.sort((a, b) => parseInt(a.place) - parseInt(b.place));
 
-	results = results.slice(0, limit - 1);
+	results = results.slice(0, limit);
 
 	let events = '';
 	for (let i = 0; i < results.length; i++) {
