@@ -112,9 +112,23 @@ const getUpcomingEvents = async () => {
 	});
 	return upcomingEvents || null;
 };
+
+const getEventByIdOrName = async query => {
+	const currentYear = new Date().getUTCFullYear();
+	const events = await fetchAndCache(`events_${currentYear}`, `https://ctftime.org/api/v1/events/?limit=1000`);
+	let event;
+	if (query.match(/^[0-9]+$/)) {
+		event = events.find(event => event.id == query);
+	} else {
+		event = events.find(event => event.title.toLowerCase().includes(query.toLowerCase()));
+	}
+	return event || null;
+};
+
 module.exports = {
 	getTeam,
 	getEventsByTeam,
 	getUpcomingEvents,
+	getEventByIdOrName,
 	suff: suffix,
 };

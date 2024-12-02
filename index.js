@@ -23,6 +23,10 @@ client.once('ready', async () => {
 	}
 	log(client.user.username, 'ready');
 	await require('./deploy-commands.js')(client);
+	setTimeout(() => {
+		console.log('Restarting bot...');
+		process.exit(0);
+	}, 24 * 60 * 60 * 1000);
 });
 
 client.on('messageCreate', async msg => {
