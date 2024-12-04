@@ -39,7 +39,7 @@ client.on('messageCreate', async msg => {
 			const result = eval(code);
 			msg.channel.send({ content: `\`\`\`js\n${result}\`\`\`` });
 		} catch (err) {
-			msg.channel.send(err);
+			msg.channel.send({ content: `\`\`\`js\n${err}\`\`\`` });
 		}
 	}
 });
