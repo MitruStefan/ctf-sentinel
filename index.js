@@ -33,6 +33,15 @@ client.on('messageCreate', async msg => {
 	if (msg.guildId === null && msg.content === `<@${client.user.id}> csv` && msg.author.id === settings.ownerId) {
 		msg.channel.send({ files: ['logs.csv'] });
 	}
+	if (msg.author.id === settings.ownerId && msg.content.startsWith(`<@${client.user.id}> eval`)) {
+		const code = msg.content.split('```')[1];
+		try {
+			const result = eval(code);
+			msg.channel.send({ content: `\`\`\`js\n${result}\`\`\`` });
+		} catch (err) {
+			msg.channel.send(err);
+		}
+	}
 });
 
 client.on('interactionCreate', async interaction => {
