@@ -11,7 +11,7 @@ module.exports.interaction = async interaction => {
 
 	const embed = new djs.EmbedBuilder()
 		.setColor(global.config.color)
-		.setTitle(`${team.name}`)
+		.setTitle(`${team.primary_alias || team.name}`)
 		.setURL(`https://ctftime.org/team/${team.id}/`);
 
 	if (team.logo) embed.setThumbnail(team.logo);
@@ -37,7 +37,9 @@ module.exports.interaction = async interaction => {
 	}
 	if (rating) {
 		embed.setDescription(`
-${team.name} is a team from :flag_${team.country.toLowerCase()}: that has participated in ${results.length} events in 2024.
+${team.primary_alias || team.name} is a team from :flag_${team.country.toLowerCase()}: that has participated in ${
+			results.length
+		} events in ${new Date().getUTCFullYear()}.
 They are ranked ${suff(rating.country_place)} in their country and ${suff(rating.rating_place)} globally.
 `);
 	}

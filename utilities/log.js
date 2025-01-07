@@ -24,6 +24,8 @@ const log = (base, type) => {
 		logEntry = `${time},Bot Online,,${base},,\n`;
 	} else if (type == 'api') {
 		logEntry = `${time},API Uncached Call,${base.status},${base.url.replace('https://ctftime.org/', '')},,\n`;
+	} else if (type == 'response') {
+		logEntry = `${time},API Response,${btoa(encodeURIComponent(JSON.stringify(base)))},,,\n`;
 	}
 	fs.appendFileSync('logs.csv', logEntry, 'utf8');
 };
