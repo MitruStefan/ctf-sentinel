@@ -28,7 +28,7 @@ const fetchAndCache = async (key, url) => {
 		if (response.status !== 200) return null;
 		const data = await response.json();
 		cache.set(key, data);
-		if (url.includes('api/v1/teams/')) log(data, 'response');
+		if (url.includes('api/v1/results/')) log(data, 'response');
 		return data;
 	}
 };
