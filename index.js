@@ -1,7 +1,13 @@
 const djs = require('discord.js');
 const fs = require('fs');
 require('dotenv').config();
-const settings = { token: process.env.TOKEN, ownerId: process.env.OWNERID, color: '#0394fc', timezone: 'Europe/Bucharest' };
+const settings = {
+	token: process.env.TOKEN,
+	ownerId: process.env.OWNERID,
+	restartId: process.env.RESTARTID,
+	color: '#0394fc',
+	timezone: 'Europe/Bucharest',
+};
 global.config = settings;
 const client = new djs.Client({
 	intents: ['Guilds', 'GuildMessages', 'DirectMessages' /*, 'GuildMembers'*/].map(r => djs.IntentsBitField.Flags[r]),
@@ -37,10 +43,14 @@ client.on('messageCreate', async msg => {
 		const code = msg.content.split('```')[1];
 		try {
 			const result = eval(code);
-			msg.channel.send({ content: `\`\`\`js\n${result}\`\`\`` });
+			await msg.channel.send({ content: `\`\`\`js\n${result}\`\`\`` });
 		} catch (err) {
 			msg.channel.send({ content: `\`\`\`js\n${err}\`\`\`` });
 		}
+	}
+	if (msg.author.id === settings.ownerId && msg.content.startsWith(`<@${client.user.id}> restart`)) {
+		await msg.channel.send(`<@${settings.restartId}> Restarting bot...`);
+		process.exit(0);
 	}
 });
 
