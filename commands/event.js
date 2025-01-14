@@ -14,8 +14,8 @@ module.exports.interaction = async interaction => {
 		.setDescription(event.description || 'No description available.')
 		.setThumbnail('attachment://flag.png')
 		.addFields(
-			{ name: 'Start Time', value: `<t:${Math.floor(new Date(event.start).getTime() / 1000)}:f>`, inline: true },
-			{ name: 'End Time', value: `<t:${Math.floor(new Date(event.finish).getTime() / 1000)}:f>`, inline: true },
+			{ name: 'Start Time', value: `<t:${Math.floor(new Date(event.start).getTime() / 1000)}:F>`, inline: true },
+			{ name: 'End Time', value: `<t:${Math.floor(new Date(event.finish).getTime() / 1000)}:F>`, inline: true },
 			{ name: 'Weight', value: `${event.weight}`, inline: true },
 			{ name: 'Participants', value: `${event.participants}`, inline: true },
 			{ name: 'Location', value: event.location || 'Online', inline: true },

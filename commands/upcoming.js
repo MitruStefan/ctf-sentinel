@@ -40,7 +40,7 @@ module.exports.interaction = async interaction => {
 		let value = `${i < 10 ? `:number_${i + 1}:` : `${i + 1}`} **[${
 			event.title.length > 40 ? `${event.title.slice(0, 37)}...` : event.title
 		}](${event.ctftime_url})**
-\nBegins: <t:${Math.floor(startTime.getTime() / 1000)}:f>\nEnds: <t:${Math.floor(endTime.getTime() / 1000)}:f>
+\nBegins: <t:${Math.floor(startTime.getTime() / 1000)}:F>\nEnds: <t:${Math.floor(endTime.getTime() / 1000)}:F>
 Website: <${event.url}>
 Weight: ${event.weight}
 Participants: ${event.participants}
