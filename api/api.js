@@ -98,10 +98,9 @@ const getUpcomingEvents = async () => {
 	const events = await fetchAndCache(`events_${currentYear}`, `https://ctftime.org/api/v1/events/?limit=1000`);
 	if (!events) return null;
 	const startDate = new Date();
-	startDate.setDate(startDate.getDate() + ((1 - startDate.getDay()) % 7));
 	startDate.setHours(3, 0, 0, 0);
 	const endDate = new Date(startDate);
-	endDate.setDate(new Date().getDate() + 8);
+	endDate.setDate(startDate.getDate() + 7);
 	endDate.setHours(3, 0, 0, 0);
 
 	const upcomingEvents = events.filter(event => {
