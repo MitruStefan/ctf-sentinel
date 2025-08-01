@@ -106,7 +106,7 @@ const getUpcomingEvents = async () => {
 
 	const upcomingEvents = events.filter(event => {
 		const startTime = new Date(event.start);
-		console.log(event);
+		//console.log(event);
 		return (
 			startTime >= startDate && startTime <= endDate && (!event.onsite || event.location.includes('Online') || event.location == '')
 		);
