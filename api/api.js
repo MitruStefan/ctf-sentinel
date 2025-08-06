@@ -25,7 +25,10 @@ const fetchAndCache = async (key, url) => {
 	} else {
 		const response = await fetch(url);
 		log(response, 'api');
-		if (response.status !== 200) return null;
+		if (response.status !== 200) {
+			console.log(`Error fetching ${url}: ${response.status} ${response.statusText}`);
+			return null;
+		}
 		const data = await response.json();
 		cache.set(key, data);
 		if (url.includes('api/v1/results/')) log(data, 'response');
@@ -125,10 +128,21 @@ const getEventByIdOrName = async query => {
 	return event || null;
 };
 
+const getTopTeams = async (limit = 10) => {
+	const safeLimit = Math.max(1, Math.min(limit, 100));
+	const currentYear = new Date().getUTCFullYear();
+
+	const topTeams = await fetchAndCache(`top_teams_${currentYear}_100`, `https://ctftime.org/api/v1/top/${currentYear}/?limit=100`);
+	if (!topTeams?.[currentYear]) return null;
+
+	return topTeams[currentYear].slice(0, safeLimit);
+};
+
 module.exports = {
 	getTeam,
 	getEventsByTeam,
 	getUpcomingEvents,
 	getEventByIdOrName,
+	getTopTeams,
 	suff: suffix,
 };
