@@ -7,6 +7,11 @@ module.exports.interaction = async interaction => {
 	const event = await getEventByIdOrName(query);
 	if (!event) return interaction.editReply({ content: 'Event not found.' });
 
+	const trunc = v => {
+		const s = String(v ?? '');
+		return s.length > 1024 ? s.slice(0, 1021) + '...' : s;
+	};
+
 	const embed = new djs.EmbedBuilder()
 		.setColor(global.config.color)
 		.setTitle(`${event.title}`)
@@ -14,14 +19,14 @@ module.exports.interaction = async interaction => {
 		.setDescription(event.description || 'No description available.')
 		.setThumbnail('attachment://flag.png')
 		.addFields(
-			{ name: 'Start Time', value: `<t:${Math.floor(new Date(event.start).getTime() / 1000)}:F>`, inline: true },
-			{ name: 'End Time', value: `<t:${Math.floor(new Date(event.finish).getTime() / 1000)}:F>`, inline: true },
-			{ name: 'Weight', value: `${event.weight}`, inline: true },
-			{ name: 'Participants', value: `${event.participants}`, inline: true },
-			{ name: 'Location', value: event.location || 'Online', inline: true },
-			{ name: 'Website', value: event.url || 'None', inline: true },
-			{ name: 'Prizes', value: event.prizes ? event.prizes : 'None' },
-			{ name: 'Description', value: event.description || 'No description available.' },
+			{ name: 'Start Time', value: trunc(`<t:${Math.floor(new Date(event.start).getTime() / 1000)}:F>`), inline: true },
+			{ name: 'End Time', value: trunc(`<t:${Math.floor(new Date(event.finish).getTime() / 1000)}:F>`), inline: true },
+			{ name: 'Weight', value: trunc(event.weight), inline: true },
+			{ name: 'Participants', value: trunc(event.participants), inline: true },
+			{ name: 'Location', value: trunc(event.location || 'Online'), inline: true },
+			{ name: 'Website', value: trunc(event.url || 'None'), inline: true },
+			{ name: 'Prizes', value: trunc(event.prizes ? event.prizes : 'None') },
+			{ name: 'Description', value: trunc(event.description || 'No description available.') },
 		);
 
 	if (event.logo) {
